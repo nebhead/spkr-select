@@ -1,0 +1,29 @@
+begin
+button = KEY_1
+prog = control
+config = KEY_1
+end
+
+begin
+button = KEY_2
+prog = control
+config = KEY_2
+end
+
+begin
+button = KEY_3
+prog = control
+config = KEY_3
+end
+
+begin
+button = KEY_4
+prog = control
+config = KEY_4
+end
+
+begin
+button = KEY_POWER
+prog = control
+config = KEY_POWER
+end

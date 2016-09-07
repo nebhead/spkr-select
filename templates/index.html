@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>Speaker Select App</title>
+
+  <!-- Bootstrap -->
+  <link href="static/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap theme -->
+  <link href="static/css/bootstrap-theme.min.css" rel="stylesheet">
+  <!-- Ti-Ta-Toggle Bootstrap -->
+  <link href="static/css/titatoggle-dist.css" rel="stylesheet">
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="static/js/bootstrap.min.js"></script>
+  <!-- Adding a Favicon -->
+  <link href="static/favicon.ico" rel="icon" type="image/x-icon" />
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Speaker Select App</a>
+      </div>
+    </div>
+  </nav>
+  <br>
+
+  <div class="container theme-showcase" role="main">
+    <form name="input" action="/" method="POST">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title"> Speaker Selection</h3>
+        </div>
+        <div class="panel-body">
+          <div class="checkbox checkbox-slider-lg checkbox-slider--a  checkbox-slider-info">
+            <label>
+              {% if spkr_state[0] == 'on' %}
+              <input name="spkrs_01" type="checkbox" onclick="this.form.submit()" checked><span>Living Room </span>
+              {% else %}
+              <input name="spkrs_01" type="checkbox" onclick="this.form.submit()"><span>Living Room </span>
+              {% endif %}
+              <input name="spkrs_01" type="hidden" value="off">
+            </label>
+          </div>
+
+          <div class="checkbox checkbox-slider-lg checkbox-slider--a  checkbox-slider-info">
+            <label>
+              {% if spkr_state[1] == 'on' %}
+              <input name="spkrs_02" type="checkbox" onclick="this.form.submit()" checked><span>Kitchen</span>
+              {% else %}
+              <input name="spkrs_02" type="checkbox" onclick="this.form.submit()"><span>Kitchen</span>
+              {% endif %}
+              <input name="spkrs_02" type="hidden" value="off">
+            </label>
+          </div>
+
+          <div class="checkbox checkbox-slider-lg checkbox-slider--a  checkbox-slider-info">
+            <label>
+              {% if spkr_state[2] == 'on' %}
+              <input name="spkrs_03" type="checkbox" onclick="this.form.submit()" checked><span>Dining Room</span>
+              {% else %}
+              <input name="spkrs_03" type="checkbox" onclick="this.form.submit()"><span>Dining Room</span>
+              {% endif %}
+              <input name="spkrs_03" type="hidden" value="off">
+            </label>
+          </div>
+
+          <div class="checkbox checkbox-slider-lg checkbox-slider--a  checkbox-slider-info">
+            <label>
+              <input name="spkrs_04" type="checkbox" onclick="this.form.submit()" disabled><span>Unconnected</span>
+              <input name="spkrs_04" type="hidden" value="off">
+            </label>
+          </div>
+
+          {% if spkr_state[4] == 'on' %}
+          <div class="alert alert-warning" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span><strong> Speaker Protection Enabled:</strong> Speaker protection automatically enabled when two (2) or more speakers enabled.
+          </div>
+          {% else %}
+          <div class="alert alert-info" role="alert">
+            <span class="glyphicon glyphicon-info-sign"></span><strong> Speaker Protection Disabled:</strong> Speaker protection automatically disabled when one (1) set of speakers enabled.
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </form>
+    <div class="well">
+      <p style="color:grey">Speaker Selector Web Application created by <a href="http://parmeter.net/tech">Ben Parmeter</a>, copyright 2016.</p>
+	  <p style="color:grey">For administration tasks <a href="/admin">click here.</a></p>
+    </div>
+  </div>
+
+</body>
+</html>
