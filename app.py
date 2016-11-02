@@ -1,7 +1,7 @@
 
 # Speaker Selector Flask/Python script
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, make_response
 import time
 import os
 import pickle
@@ -48,6 +48,12 @@ def admin(action=None):
 	temp = checkcputemp()
 
 	return render_template('admin.html', temp=temp, action=action)
+
+@app.route('/manifest')
+def manifest():
+    res = make_response(render_template('manifest.json'), 200)
+    res.headers["Content-Type"] = "text/cache-manifest"
+    return res
 
 def checkcputemp():
 	temp = os.popen('vcgencmd measure_temp').readline()

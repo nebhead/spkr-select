@@ -8,17 +8,24 @@
   <title>Speaker Select App</title>
 
   <!-- Bootstrap -->
-  <link href="static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Bootstrap theme -->
-  <link href="static/css/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
+
   <!-- Ti-Ta-Toggle Bootstrap -->
-  <link href="static/css/titatoggle-dist.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/titatoggle-dist.css') }}" rel="stylesheet">
+
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+
   <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="static/js/bootstrap.min.js"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
   <!-- Adding a Favicon -->
-  <link href="static/favicon.ico" rel="icon" type="image/x-icon" />
+  <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon" type="image/x-icon" />
+
+  <!-- WebApp Manifest -->
+  <link rel="manifest" href="{{ url_for('manifest') }}">
 
 </head>
 
