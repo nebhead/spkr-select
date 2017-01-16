@@ -157,6 +157,12 @@ def CheckRemoteInput(spkr_state):
 		WriteSpkrState(spkr_state)
 		SetRelays(spkr_state)
 
+# *****************************************
+# Main Program Start / Init
+# *****************************************
+
+spkr_state = ReadSpkrState()
+SetRelays(spkr_state)
 
 # *****************************************
 # Main Program Loop
