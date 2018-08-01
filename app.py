@@ -16,10 +16,16 @@ def index():
 	error = False
 	# If posting, process input from POST
 	if request.method == 'POST':
-		spkr_state[0] = request.form['spkrs_01']
-		spkr_state[1] = request.form['spkrs_02']
-		spkr_state[2] = request.form['spkrs_03']
-		spkr_state[3] = request.form['spkrs_04']
+		response = request.form
+
+		if('spkrs_01' in response):
+			spkr_state[0] = request.form['spkrs_01']
+		if('spkrs_02' in response):
+			spkr_state[1] = request.form['spkrs_02']
+		if('spkrs_03' in response):
+			spkr_state[2] = request.form['spkrs_03']
+		if('spkrs_04' in response):
+			spkr_state[3] = request.form['spkrs_04']
 
 		# Count number of speakers selected, turn on protection if > 1
 		for x in range(4):
@@ -38,16 +44,26 @@ def index():
 @app.route('/admin/<action>')
 @app.route('/admin')
 def admin(action=None):
+
 	if action == 'reboot':
-		os.system("sudo shutdown -r now")
-		return 'Rebooting...'
-	if action == 'shutdown':
-		os.system("sudo shutdown -h now")
-		return 'Shutting Down...'
+		event = "Admin: Reboot"
+		os.system("sleep 3 && sudo reboot &")
+		return render_template('shutdown.html', action=action)
+
+	elif action == 'shutdown':
+		event = "Admin: Shutdown"
+		os.system("sleep 3 && sudo shutdown -h now &")
+		return render_template('shutdown.html', action=action)
+
+	uptime = os.popen('uptime').readline()
+
+	cpuinfo = os.popen('cat /proc/cpuinfo').readlines()
+
+	ifconfig = os.popen('ifconfig').readlines()
 
 	temp = checkcputemp()
 
-	return render_template('admin.html', temp=temp, action=action)
+	return render_template('admin.html', action=action, uptime=uptime, cpuinfo=cpuinfo, temp=temp, ifconfig=ifconfig)
 
 @app.route('/manifest')
 def manifest():

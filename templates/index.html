@@ -1,109 +1,125 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-  <title>Speaker Select App</title>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!-- Bootstrap -->
-  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-  <!-- Bootstrap theme -->
-  <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 
-  <!-- Ti-Ta-Toggle Bootstrap -->
-  <link href="{{ url_for('static', filename='css/titatoggle-dist.css') }}" rel="stylesheet">
+    <!-- Adding a Favicon -->
+     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon" type="image/x-icon" />
 
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <!-- WebApp Manifest -->
+    <link rel="manifest" href="{{ url_for('manifest') }}">
 
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <title>Speaker Select App</title>
 
-  <!-- Adding a Favicon -->
-  <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon" type="image/x-icon" />
+  </head>
+	<body>
 
-  <!-- WebApp Manifest -->
-  <link rel="manifest" href="{{ url_for('manifest') }}">
+		<!-- Navbar Header -->
+		<nav class="navbar sticky-top navbar-dark bg-dark">
 
-</head>
+			<a class="navbar-brand" href="#">
+				<img src="{{ url_for('static', filename='img/launcher-icon-1x.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
+				Speaker Select</a>
 
-<body>
-  <nav class="navbar navbar-inverse navbar-static-top">
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#">Speaker Select App</a>
-      </div>
-    </div>
-  </nav>
-  <br>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			    <span class="navbar-toggler-icon"></span>
+			  </button>
 
-  <div class="container theme-showcase" role="main">
-    <form name="input" action="/" method="POST">
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          <h3 class="panel-title"> Speaker Selection</h3>
-        </div>
-        <div class="panel-body">
-          <div class="checkbox checkbox-slider-lg checkbox-slider--a  checkbox-slider-info">
-            <label>
-              {% if spkr_state[0] == 'on' %}
-              <input name="spkrs_01" type="checkbox" onclick="this.form.submit()" checked><span>Living Room </span>
-              {% else %}
-              <input name="spkrs_01" type="checkbox" onclick="this.form.submit()"><span>Living Room </span>
-              {% endif %}
-              <input name="spkrs_01" type="hidden" value="off">
-            </label>
-          </div>
+			  <div class="collapse navbar-collapse" id="navbarNav">
+			    <ul class="navbar-nav">
+			      <li class="nav-item active">
+			        <a class="nav-link" href="#">Selector <span class="sr-only">(current)</span></a>
+			      </li>
+			      <li class="nav-item">
+			        <a class="nav-link" href="/admin">Admin</a>
+			      </li>
+			    </ul>
+			  </div>
 
-          <div class="checkbox checkbox-slider-lg checkbox-slider--a  checkbox-slider-info">
-            <label>
-              {% if spkr_state[1] == 'on' %}
-              <input name="spkrs_02" type="checkbox" onclick="this.form.submit()" checked><span>Kitchen</span>
-              {% else %}
-              <input name="spkrs_02" type="checkbox" onclick="this.form.submit()"><span>Kitchen</span>
-              {% endif %}
-              <input name="spkrs_02" type="hidden" value="off">
-            </label>
-          </div>
+		</nav>
+  	<br>
 
-          <div class="checkbox checkbox-slider-lg checkbox-slider--a  checkbox-slider-info">
-            <label>
-              {% if spkr_state[2] == 'on' %}
-              <input name="spkrs_03" type="checkbox" onclick="this.form.submit()" checked><span>Dining Room</span>
-              {% else %}
-              <input name="spkrs_03" type="checkbox" onclick="this.form.submit()"><span>Dining Room</span>
-              {% endif %}
-              <input name="spkrs_03" type="hidden" value="off">
-            </label>
-          </div>
+  	<div class="container">
+				<div class="card">
+				  <div class="card-body">
+						<form name="input" action="/" method="POST">
+							<div class="btn-group-vertical btn-group-lg btn-block" role="group">
+								<!-- Living Room Button -->
+								{% if spkr_state[0] == 'on' %}
+								<button type="submit" name="spkrs_01" value="off" class="btn btn-info">Living Room</button>
+								{% else %}
+								<button type="submit" name="spkrs_01" value="on" class="btn btn-outline-secondary">Living Room</button>
+								{% endif %}
 
-          <div class="checkbox checkbox-slider-lg checkbox-slider--a  checkbox-slider-info">
-            <label>
-              <input name="spkrs_04" type="checkbox" onclick="this.form.submit()" disabled><span>Unconnected</span>
-              <input name="spkrs_04" type="hidden" value="off">
-            </label>
-          </div>
+								<!-- Kitchen Room Button -->
+								{% if spkr_state[1] == 'on' %}
+								<button type="submit" name="spkrs_02" value="off" class="btn btn-info">Kitchen</button>
+								{% else %}
+								<button type="submit" name="spkrs_02" value="on" class="btn btn-outline-secondary">Kitchen</button>
+								{% endif %}
 
-          {% if spkr_state[4] == 'on' %}
-          <div class="alert alert-warning" role="alert">
-            <span class="glyphicon glyphicon-info-sign"></span><strong> Speaker Protection Enabled:</strong> Speaker protection automatically enabled when two (2) or more speakers enabled.
-          </div>
-          {% else %}
-          <div class="alert alert-info" role="alert">
-            <span class="glyphicon glyphicon-info-sign"></span><strong> Speaker Protection Disabled:</strong> Speaker protection automatically disabled when one (1) set of speakers enabled.
-          </div>
-          {% endif %}
+								<!-- Dining Room Button -->
+								{% if spkr_state[2] == 'on' %}
+								<button type="submit" name="spkrs_03" value="off" class="btn btn-info">Dining Room</button>
+								{% else %}
+								<button type="submit" name="spkrs_03" value="on" class="btn btn-outline-secondary">Dining Room</button>
+								{% endif %}
 
-        </div>
-      </div>
-    </form>
-    <div class="well">
-      <p style="color:grey">Speaker Selector Web Application created by <a href="http://parmeter.net/tech">Ben Parmeter</a>, copyright 2016.</p>
-	  <p style="color:grey">For administration tasks <a href="/admin">click here.</a></p>
-    </div>
-  </div>
+							</div> <!-- End Button Group -->
+
+						</form>
+						<br>
+
+						<!-- All-On Settings Button -->
+						<form name="input" action="/" method="POST">
+							<input name="spkrs_01" type="hidden" value="on">
+							<input name="spkrs_02" type="hidden" value="on">
+							<input name="spkrs_03" type="hidden" value="on">
+							<button type="submit" class="btn btn-primary btn-lg btn-block"> All-On </button>
+						</form>
+						<br>
+						<!-- Default Settings Button -->
+						<form name="input" action="/" method="POST">
+							<input name="spkrs_01" type="hidden" value="on">
+							<input name="spkrs_02" type="hidden" value="off">
+							<input name="spkrs_03" type="hidden" value="off">
+							<button type="submit" class="btn btn-primary btn-lg btn-block">Default</button>
+						</form>
+						<br>
+						<!-- Status Bar -->
+	          {% if spkr_state[4] == 'on' %}
+	          <div class="alert alert-warning" role="alert">
+							<img src="{{ url_for('static', filename='img/warn-icon.png') }}" width="20" height="20" class="d-inline-block align-top" alt="">
+	            <strong>    Speaker Protection Enabled:</strong> Speaker protection automatically enabled when two (2) or more speakers enabled.
+	          </div>
+	          {% else %}
+	          <div class="alert alert-info" role="alert">
+							<img src="{{ url_for('static', filename='img/info-icon.png') }}" width="20" height="20" class="d-inline-block align-top" alt="">
+							<strong>    Speaker Protection Disabled:</strong> Speaker protection automatically disabled when one (1) set of speakers enabled.
+	          </div>
+	          {% endif %}
+
+				  </div>
+				</div>
+  	</div> <!-- End Showcase -->
+
+		<div class="container">
+			<nav class="navbar fixed-bottom navbar-light" style="background-color: #e3f2fd;">
+				<span class="navbar-text">
+			    Web Application created by Ben Parmeter, copyright 2016-2018.
+			  </span>
+ 			</nav>
+		</div>
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
 </body>
 </html>

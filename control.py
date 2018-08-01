@@ -34,17 +34,17 @@ GPIO.setup(25, GPIO.OUT, initial=1) # Relays (7 & 8) - Protection (L/R)
 # Init Global Variable for Speaker Switch States
 spkr_state = ['on', 'off', 'off', 'off', 'off']
 
-LED01 = GPIO.PWM(17, 100)
-LED02 = GPIO.PWM(18, 100)
-LED03 = GPIO.PWM(19, 100)
+#LED01 = GPIO.PWM(17, 100)
+#LED02 = GPIO.PWM(18, 100)
+#LED03 = GPIO.PWM(19, 100)
 #LED04 = GPIO.PWM(20, 100)
-LED05 = GPIO.PWM(21, 100)
+#LED05 = GPIO.PWM(21, 100)
 
-LED01.start(25)  # Turn on LED
-LED02.start(0)  # Turn off LED
-LED03.start(0)  # Turn off LED
+#LED01.start(25)  # Turn on LED
+#LED02.start(0)  # Turn off LED
+#LED03.start(0)  # Turn off LED
 #LED04.start(0)  # Turn off LED
-LED05.start(0)  # Turn off LED
+#LED05.start(0)  # Turn off LED
 
 sockidc = lirc.init("control", "/home/pi/spkr-select/.lircrc", blocking=False)
 
@@ -55,24 +55,30 @@ def SetRelays(spkr_state):
 
 	if spkr_state[0] == 'on':
 		GPIO.output(22, 1) 	#Turn on Relay (0 = On) - Channel 1 Reverse Logic
-		LED01.start(5) 	#Turn on LED (1 = On)
+		GPIO.output(17, 1)
+#		LED01.start(5) 	#Turn on LED (1 = On)
 	else:
 		GPIO.output(22, 0) 	#Turn off Relay (1 = Off) - Channel 1 Reverse Logic
-		LED01.stop()  #Turn off LED (0 = Off)
+		GPIO.output(17, 0)
+#		LED01.stop()  #Turn off LED (0 = Off)
 
 	if spkr_state[1] == 'on':
 		GPIO.output(23, 0) 	#Turn on Relay (0 = On)
-		LED02.start(5) 	#Turn on LED (1 = On)
+		GPIO.output(18, 1)
+#		LED02.start(5) 	#Turn on LED (1 = On)
 	else:
 		GPIO.output(23, 1) 	#Turn off Relay (1 = Off)
-		LED02.stop()  #Turn off LED (0 = Off)
+		GPIO.output(18, 0)
+#		LED02.stop()  #Turn off LED (0 = Off)
 
 	if spkr_state[2] == 'on':
 		GPIO.output(24, 0) 	#Turn on Relay (0 = On)
-		LED03.start(5) 	#Turn on LED (1 = On)
+		GPIO.output(19, 1)
+#		LED03.start(5) 	#Turn on LED (1 = On)
 	else:
 		GPIO.output(24, 1) 	#Turn off Relay (1 = Off)
-		LED03.stop()  #Turn off LED (0 = Off)
+		GPIO.output(19, 0)
+#		LED03.stop()  #Turn off LED (0 = Off)
 
 	# spkr_state[3] unconnected and disabled
 	#if spkr_state[3] == 'on':
@@ -84,10 +90,12 @@ def SetRelays(spkr_state):
 
 	if spkr_state[4] == 'on':
 		GPIO.output(25, 0) 	#Turn on Relay, turn on protection - Reverse logic for Protection Relay
-		LED05.start(5) 	#Turn on LED (1 = On)
+		GPIO.output(21, 1)
+#		LED05.start(5) 	#Turn on LED (1 = On)
 	else:
 		GPIO.output(25, 1) 	#Turn on Relay, turn off protection - Reverse logic for Protection Relay
-		LED05.stop()  #Turn off LED (0 = Off)
+		GPIO.output(21, 0)
+#		LED05.stop()  #Turn off LED (0 = Off)
 
 def ReadSpkrState():
 	# *****************************************
