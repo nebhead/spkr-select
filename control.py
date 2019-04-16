@@ -14,8 +14,13 @@
 import time
 import RPi.GPIO as GPIO
 import os
-import lirc
 import pickle
+
+LIRC_Enabled = False # Set to True to enable Lirc / Remote Control Functions and False to disable
+
+if (LIRC_Enabled == True):
+	import lirc
+	sockidc = lirc.init("control", "/home/pi/spkr-select/.lircrc", blocking=False)
 
 # Init GPIO's to default values / behavior
 GPIO.setmode(GPIO.BCM)
@@ -34,20 +39,6 @@ GPIO.setup(25, GPIO.OUT, initial=1) # Relays (7 & 8) - Protection (L/R)
 # Init Global Variable for Speaker Switch States
 spkr_state = ['on', 'off', 'off', 'off', 'off']
 
-#LED01 = GPIO.PWM(17, 100)
-#LED02 = GPIO.PWM(18, 100)
-#LED03 = GPIO.PWM(19, 100)
-#LED04 = GPIO.PWM(20, 100)
-#LED05 = GPIO.PWM(21, 100)
-
-#LED01.start(25)  # Turn on LED
-#LED02.start(0)  # Turn off LED
-#LED03.start(0)  # Turn off LED
-#LED04.start(0)  # Turn off LED
-#LED05.start(0)  # Turn off LED
-
-sockidc = lirc.init("control", "/home/pi/spkr-select/.lircrc", blocking=False)
-
 def SetRelays(spkr_state):
 	# *****************************************
 	# Function to set relays (and set LEDs if applicable)
@@ -55,47 +46,39 @@ def SetRelays(spkr_state):
 
 	if spkr_state[0] == 'on':
 		GPIO.output(22, 1) 	#Turn on Relay (0 = On) - Channel 1 Reverse Logic
-		GPIO.output(17, 1)
-#		LED01.start(5) 	#Turn on LED (1 = On)
+		GPIO.output(17, 1)  #Turn on LED (1 = On)
 	else:
 		GPIO.output(22, 0) 	#Turn off Relay (1 = Off) - Channel 1 Reverse Logic
-		GPIO.output(17, 0)
-#		LED01.stop()  #Turn off LED (0 = Off)
+		GPIO.output(17, 0)  #Turn off LED (0 = Off)
 
 	if spkr_state[1] == 'on':
 		GPIO.output(23, 0) 	#Turn on Relay (0 = On)
-		GPIO.output(18, 1)
-#		LED02.start(5) 	#Turn on LED (1 = On)
+		GPIO.output(18, 1)  #Turn on LED (1 = On)
 	else:
 		GPIO.output(23, 1) 	#Turn off Relay (1 = Off)
-		GPIO.output(18, 0)
-#		LED02.stop()  #Turn off LED (0 = Off)
+		GPIO.output(18, 0)  #Turn off LED (0 = Off)
 
 	if spkr_state[2] == 'on':
 		GPIO.output(24, 0) 	#Turn on Relay (0 = On)
-		GPIO.output(19, 1)
-#		LED03.start(5) 	#Turn on LED (1 = On)
+		GPIO.output(19, 1)  #Turn on LED (1 = On)
 	else:
 		GPIO.output(24, 1) 	#Turn off Relay (1 = Off)
-		GPIO.output(19, 0)
-#		LED03.stop()  #Turn off LED (0 = Off)
+		GPIO.output(19, 0)  #Turn off LED (0 = Off)
 
 	# spkr_state[3] unconnected and disabled
 	#if spkr_state[3] == 'on':
-		#GPIO.output(25, 0) 	#Turn on Relay (0 = On)
-		#LED04.start(5) 	#Turn on LED (1 = On)
+		#GPIO.output(xx, 0)  #Turn on Relay (0 = On)
+		#GPIO.output(20, 1)  #Turn on LED (1 = On)
 	#else:
-		#GPIO.output(25, 1) 	#Turn off Relay (1 = On)
-		#LED04.stop()  #Turn off LED (0 = Off)
+		#GPIO.output(xx, 1)  #Turn off Relay (1 = On)
+		#GPIO.output(20, 0)  #Turn off LED (0 = Off)
 
 	if spkr_state[4] == 'on':
 		GPIO.output(25, 0) 	#Turn on Relay, turn on protection - Reverse logic for Protection Relay
-		GPIO.output(21, 1)
-#		LED05.start(5) 	#Turn on LED (1 = On)
+		GPIO.output(21, 1)  #Turn on LED (1 = On)
 	else:
 		GPIO.output(25, 1) 	#Turn on Relay, turn off protection - Reverse logic for Protection Relay
-		GPIO.output(21, 0)
-#		LED05.stop()  #Turn off LED (0 = Off)
+		GPIO.output(21, 0)  #Turn off LED (0 = Off)
 
 def ReadSpkrState():
 	# *****************************************
@@ -124,7 +107,6 @@ def WriteSpkrState(spkr_state):
 	with open('state.dat', 'wb') as states:
 		pickle.dump(spkr_state, states, protocol=2)
 		states.close()
-	print("Writing State.")
 
 def CheckRemoteInput(spkr_state):
 	# *****************************************
@@ -180,11 +162,12 @@ while True:
 	if (spkr_state != ReadSpkrState()):
 		spkr_state = ReadSpkrState()
 		SetRelays(spkr_state)
-	else:
+	elif (LIRC_Enabled == True):
 		CheckRemoteInput(spkr_state)
 	time.sleep(0.25)
-#except:
-#	print("Exception.  Exiting.")
-#	lirc.deinit()
-#	GPIO.cleanup()
-#	exit()
+
+if (LIRC_Enabled == True):
+	lirc.deinit()
+
+GPIO.cleanup()
+exit()
