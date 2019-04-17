@@ -161,13 +161,29 @@ sudo raspi-config
 + Set timezone
 + Replace Hostname with a unique hostname ('i.e. spkr-select')
 
+### Automatic Software Installation (ALPHA)
+
+I've created a script to install this automatically, but it is in ALPHA testing.  Your mileage may vary, and it's still recommended to try the below Manual Install.
+
+After you've done the above steps to configure your raspberry pi, at the command line type the following:
+
+```
+curl https://raw.githubusercontent.com/nebhead/spkr-select/master/auto-install/install.sh | bash
+```
+
+Follow the onscreen prompts to complete the installation.  At the end of the script it will reboot, so just be aware of this.  
+
+### Manual Software Installation (Recommended)
+
+Install dependencies.  
+
 #### Install Git, Python PIP, Flask, Gunicorn, nginx, and supervisord
 ```
 sudo apt update
 sudo apt upgrade
 sudo apt install python-pip nginx git gunicorn supervisor -y
 sudo pip install flask
-sudo pip install pickle
+
 git clone https://github.com/nebhead/spkr-select
 ```
 
@@ -188,7 +204,8 @@ sudo ln -s /etc/nginx/sites-available/spkr-select /etc/nginx/sites-enabled
 
 # Create certificates for SSL support
 cd ~/spkr-select/certs
-sudo .\generate.sh
+sudo chmod +x generate.sh
+sudo ./generate.sh
 
 # Restart nginx
 sudo service nginx restart
@@ -226,7 +243,7 @@ password = pass
 ```
 If we access our server in a web browser at port 9001, we'll see the web interface that shows the status of the two scripts (WebApp and Control).  This gives you a quick and easy way to monitor whether any of the scripts has stopped functioning.  
 
-### LIRC Install and Configuration
+### LIRC Install and Configuration (OPTIONAL)
 
 Some configuration may be required for your IR remote control.  I chose an existing remote control schema that I could use with my Logitech Harmony remote.  If you would like to use the same configuration with your programmable remote (such as the Logitech Harmony), use the below steps to setup and install lirc, and the lirc python module.  I'm emulating the buttons on the [RF-Link AVS-411](https://www.amazon.com/RF-Link-AVS-41I-Selector-Terminals/dp/B000GAMTAS/) since it's something that is supported by the Harmony remote and it has a similar functionality to what I'm looking for.  
 
