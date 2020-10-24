@@ -8,7 +8,6 @@
 #
 # curl https://raw.githubusercontent.com/nebhead/spkr-select/master/auto-install/install.sh | bash
 #
-# NOTE: Lirc enabling requires additional configuration.  See README.md.
 
 # Must be root to install
 if [[ $EUID -eq 0 ]];then
@@ -39,7 +38,7 @@ r=$(( r < 20 ? 20 : r ))
 c=$(( c < 70 ? 70 : c ))
 
 # Display the welcome dialog
-whiptail --msgbox --backtitle "Welcome" --title "Speaker-Select Automated Installer" "This installer will transform your Raspberry Pi into a smart speaker-selector.  NOTE: This installer is intended to be run on a fresh install of Raspbian Lite Stretch.  This script is currently in Alpha testing so there may be bugs." ${r} ${c}
+whiptail --msgbox --backtitle "Welcome" --title "Speaker-Select Automated Installer" "This installer will transform your Raspberry Pi into a smart speaker-selector.  NOTE: This installer is intended to be run on a fresh install of Raspberry Pi OS (Buster)." ${r} ${c}
 
 # Starting actual steps for installation
 clear
@@ -64,8 +63,8 @@ echo "**                                                                     **"
 echo "**      Installing Dependancies... (This could take several minutes)   **"
 echo "**                                                                     **"
 echo "*************************************************************************"
-$SUDO apt install python-pip nginx git gunicorn supervisor -y
-$SUDO pip install flask
+$SUDO apt install python3-dev python3-pip python3-rpi.gpio nginx git gunicorn3 supervisor -y
+$SUDO pip3 install flask
 
 # Grab project files
 clear
@@ -74,6 +73,7 @@ echo "**                                                                     **"
 echo "**      Cloning Speaker-Select from GitHub...                          **"
 echo "**                                                                     **"
 echo "*************************************************************************"
+cd ~
 git clone https://github.com/nebhead/spkr-select
 
 ### Setup nginx to proxy to gunicorn
@@ -142,8 +142,48 @@ else
    echo "No WebUI Setup."
 fi
 
+echo "Starting Supervisor Service..."
 # If supervisor isn't already running, startup Supervisor
 $SUDO service supervisor start
+
+### Setup LIRC for IR Remote Control Support
+clear
+echo "*************************************************************************"
+echo "**                                                                     **"
+echo "**      Configuring LIRC...                                            **"
+echo "**                                                                     **"
+echo "*************************************************************************"
+
+LIRC=$(whiptail --title "Would you like to enable LIRC?" --radiolist "This option allows you to control the speaker selector via an IR remote control. (NOTE: This install ONLY WORKS WITH Raspberry Pi OS Buster 08-2020.  Will NOT work with prior versions or with Stretch as many configurations have changed.)" 20 78 2 "ENABLE_LIRC" "Enable LIRC and install dependancies." ON "DISABLE_LIRC" "Disable LIRC" OFF 3>&1 1>&2 2>&3)
+
+if [[ $LIRC = "ENABLE_LIRC" ]];then
+    cd ~/spkr-select 
+    $SUDO apt install lirc liblircclient-dev -y
+    # Add LIRC configs to system files
+    echo "dtoverlay=gpio-ir,gpio_pin=02" | sudo tee -a /boot/config.txt > /dev/null
+    # Update the following lines in /etc/lirc/lirc_options.conf:
+    #    driver    = default
+    #    device    = /dev/lirc0
+    $SUDO sed -i 's|devinput|default|' /etc/lirc/lirc_options.conf
+    $SUDO sed -i 's|auto|/dev/lirc0|' /etc/lirc/lirc_options.conf
+    cd ~/spkr-select
+    $SUDO cp hardware.conf /etc/lirc/hardware.conf
+    $SUDO cp lircd.conf /etc/lirc/lircd.conf
+    $SUDO cp lircrc.txt /etc/lirc/.lircrc
+    $SUDO cp lircrc.txt .lircrc
+    #$SUDO pip3 install python3-lirc # This would normally work, but as of Raspberry Pi OS Buster, this package is not available
+    # Instead of the above command, we need to pull the source and build/install it locally 
+    $SUDO pip3 install Cython
+    git clone https://github.com/tompreston/python-lirc.git
+    cd python-lirc 
+    $SUDO python3 setup.py build
+    $SUDO python3 setup.py install 
+    cd ~/spkr-select
+    # Enable LIRC in Control.py
+    sed -i 's|LIRC_Enabled = False|LIRC_Enabled = True|' control.py
+else
+   echo "Declining LIRC setup."
+fi
 
 # Rebooting
 whiptail --msgbox --backtitle "Install Complete / Reboot Required" --title "Installation Completed - Rebooting" "Congratulations, the installation is complete.  At this time, we will perform a reboot and your application should be ready.  You should be able to access your application by opening a browser on your PC or other device and using the IP address for this Pi.  Enjoy!  Note: LIRC support requires extra configuration - see readme.md." ${r} ${c}

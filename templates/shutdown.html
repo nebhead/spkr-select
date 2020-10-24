@@ -15,7 +15,11 @@
     {% endif %}
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    {% if theme == 'dark' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-dark.css') }}">
+    {% else %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    {% endif %}
 
     <!-- Adding a Favicon -->
      <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon" type="image/x-icon" />
@@ -49,7 +53,7 @@
     </div>
 		<!-- Optional JavaScript -->
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-		<script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
   </body>

@@ -36,6 +36,13 @@ More goodness added to the application including:
 * Updated the README.md to include more information on the hardware setup.  Hopefully this will demystify the hardware build so that people building this project at home will be able to recreate it.  
 * Updated control.py to make the LIRC libraries optional (disable/enable flag).  I believe that others may have experienced issues with this project when lirc was not installed.  
 
+
+#### UPDATE: October 2020
+
+* Updated to Python 3 so that we can future proof this project a little bit.  However, given that the LIRC and python-lirc modules are not being fully supported, we may have to update again in the future.  
+* Added night mode.  Go to admin settings to enable/disable dark mode.
+* Dashboard now shows realtime udpates of enabled speakers.  
+
 ## Screenshots
 
 Here is a screenshot of the dashboard:
@@ -134,9 +141,9 @@ __Relay Control (defined in control.py):__
 
 Once you've burned/etched the Raspbian Stretch Lite image onto the microSD card, connect the card to your working PC and you'll see the card being mounted as "boot". Inside this "boot" directory, you need to make 2 new files. You can create the files using Atom code editor.
 
-+ Step 1: Create an empty file. You can use Notepad on Windows or TextEdit to do so by creating a new file. Just name the file **ssh**. Save that empty file and dump it into boot partition (microSD).
++ Step 1: Create an empty file. You can use Notepad on Windows or TextEdit to do so by creating a new file. Just name the file `ssh`. Save that empty file and dump it into boot partition (microSD).
 
-+ Step 2: Create another file name wpa_supplicant.conf . This time you need to write a few lines of text for this file. For this file, you need to use the FULL VERSION of wpa_supplicant.conf. Meaning you must have the 3 lines of data namely country, ctrl_interface and update_config
++ Step 2: Create another file name wpa_supplicant.conf . This time you need to write a few lines of text for this file. For this file, you need to use the FULL VERSION of `wpa_supplicant.conf`. Meaning you must have the 3 lines of data namely country, ctrl_interface and update_config
 
 ```
 country=US
@@ -161,9 +168,9 @@ sudo raspi-config
 + Set timezone
 + Replace Hostname with a unique hostname ('i.e. spkr-select')
 
-### Automatic Software Installation (ALPHA)
+### Automatic Software Installation (Recommended)
 
-I've created a script to install this automatically, but it is in ALPHA testing.  Your mileage may vary, and it's still recommended to try the below Manual Install.
+I've created a script to install this automatically and I believe it will work well with at least Raspberry Pi OS Buster (08-2020).  Your mileage may vary, and if you experience any trouble try the below Manual Install.
 
 After you've done the above steps to configure your raspberry pi, at the command line type the following:
 
@@ -173,7 +180,7 @@ curl https://raw.githubusercontent.com/nebhead/spkr-select/master/auto-install/i
 
 Follow the onscreen prompts to complete the installation.  At the end of the script it will reboot, so just be aware of this.  
 
-### Manual Software Installation (Recommended)
+### Manual Software Installation (If the Auto-Install doesn't work)
 
 Install dependencies.  
 
@@ -181,7 +188,7 @@ Install dependencies.
 ```
 sudo apt update
 sudo apt upgrade
-sudo apt install python-pip nginx git gunicorn supervisor -y
+sudo apt install python3-pip nginx git gunicorn3 supervisor -y
 sudo pip install flask
 
 git clone https://github.com/nebhead/spkr-select
@@ -247,31 +254,54 @@ If we access our server in a web browser at port 9001, we'll see the web interfa
 
 Some configuration may be required for your IR remote control.  I chose an existing remote control schema that I could use with my Logitech Harmony remote.  If you would like to use the same configuration with your programmable remote (such as the Logitech Harmony), use the below steps to setup and install lirc, and the lirc python module.  I'm emulating the buttons on the [RF-Link AVS-411](https://www.amazon.com/RF-Link-AVS-41I-Selector-Terminals/dp/B000GAMTAS/) since it's something that is supported by the Harmony remote and it has a similar functionality to what I'm looking for.  
 
+The folowing only works for Raspberry Pi OS Buster 2020-08 (and possibly greater).  Every time a new version of the OS comes along it seems there are quirks that need to be worked out to get this working again.  
+
+Install dependancies:
 ```
-sudo apt-get install lirc python-lirc -y
-echo "lirc_dev" >> /etc/modules
-echo "lirc_rpi gpio_in_pin=02" >> /etc/modules
-echo "dtoverlay=lirc-rpi,gpio_in_pin=02" >> /boot/config.txt  
+sudo apt-get install lirc liblircclient-dev -y
+sudo pip3 install Cython
+git clone https://github.com/tompreston/python-lirc.git
+cd python-lirc 
+sudo python3 setup.py build
+sudo python3 setup.py install 
 ```
+
+Add LIRC configs to the system files:
+```
+echo "dtoverlay=gpio-ir,gpio_pin=02" | sudo tee -a /boot/config.txt > /dev/null
+```
+
 Update the following lines in /etc/lirc/lirc_options.conf:
 ```
     driver    = default
     device    = /dev/lirc0
 ```
-Copy LIRC configuration files to /etc/lirc (make sure to include these in the install directory)
+
+(easy mode) The following two commands will edit that conf file:
+``` 
+sudo sed -i 's|devinput|default|' /etc/lirc/lirc_options.conf
+sudo sed -i 's|auto|/dev/lirc0|' /etc/lirc/lirc_options.conf
 ```
+
+Copy LIRC configuration files to /etc/lirc (make sure to include these in the install directory)
+
+```
+cd ~/spkr-select
 sudo cp hardware.conf /etc/lirc/hardware.conf
 sudo cp lircd.conf /etc/lirc/lircd.conf
 sudo cp lircrc.txt /etc/lirc/.lircrc
 sudo cp lircrc.txt .lircrc
-sudo /etc/init.d/lirc stop
-sudo /etc/init.d/lirc start
 ```
 
 Finally, enable LIRC in the **control.py** file by changing the below line:
 
 ```
 LIRC_Enabled = True # Set to True to enable Lirc / Remote Control Functions and False to disable
+```
+
+(easy mode) The following command will edit the control.py for you:
+```
+sed -i 's|LIRC_Enabled = False|LIRC_Enabled = True|' control.py
 ```
 
 #### Use your own Remote Control

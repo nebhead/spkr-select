@@ -1,0 +1,35 @@
+<div class="btn-group-vertical btn-group-lg btn-block" role="group">
+    <!-- Living Room Button -->
+    {% if spkr_state[0] == 'on' %}
+    <button type="submit" name="spkrs_01" value="off" class="btn btn-info">Living Room</button>
+    {% else %}
+    <button type="submit" name="spkrs_01" value="on" class="btn btn-outline-secondary">Living Room</button>
+    {% endif %}
+
+    <!-- Kitchen Room Button -->
+    {% if spkr_state[1] == 'on' %}
+    <button type="submit" name="spkrs_02" value="off" class="btn btn-info">Kitchen</button>
+    {% else %}
+    <button type="submit" name="spkrs_02" value="on" class="btn btn-outline-secondary">Kitchen</button>
+    {% endif %}
+
+    <!-- Dining Room Button -->
+    {% if spkr_state[2] == 'on' %}
+    <button type="submit" name="spkrs_03" value="off" class="btn btn-info">Dining Room</button>
+    {% else %}
+    <button type="submit" name="spkrs_03" value="on" class="btn btn-outline-secondary">Dining Room</button>
+    {% endif %}
+</div> <!-- End Button Group -->
+<br><br>
+<!-- Status Bar -->
+{% if spkr_state[4] == 'on' %}
+<div class="alert alert-warning" role="alert">
+                <img src="{{ url_for('static', filename='img/warn-icon.png') }}" width="20" height="20" class="d-inline-block align-top" alt="">
+    <strong>    Speaker Protection Enabled:</strong> Speaker protection automatically enabled when two (2) or more speakers enabled.
+</div>
+{% else %}
+<div class="alert alert-info" role="alert">
+                <img src="{{ url_for('static', filename='img/info-icon.png') }}" width="20" height="20" class="d-inline-block align-top" alt="">
+                <strong>    Speaker Protection Disabled:</strong> Speaker protection automatically disabled when one (1) set of speakers enabled.
+</div>
+{% endif %}

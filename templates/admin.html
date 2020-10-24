@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	{% if theme == 'dark' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-dark.css') }}">
+	{% else %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+	{% endif %}
 
     <!-- Adding a Favicon -->
      <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon" type="image/x-icon" />
@@ -86,6 +90,26 @@
         </div>
       </form>
       <br>
+
+		<!-- Themes Settings Card -->
+		<form name="input" action="/admin/settings" method="POST">
+			<div class="card">
+				<div class="card-header">
+					Theme Settings
+				</div>
+				<div class="card-body">
+					<!-- Enable / Disable Dark -->
+					{% if theme == 'dark' %}
+					<button type="submit" name="darkmode" value="false" class="btn btn-success btn-block">Dark Mode Enabled</button>
+					{% else %}
+					<button type="submit" name="darkmode" value="true" class="btn btn-secondary btn-block">Dark Mode Disabled</button>
+					{% endif %}
+					
+				</div>
+			</div>
+		</form>
+
+		<br>
 
       <!-- Admin Functions Card -->
 			<div class="card">
@@ -212,14 +236,13 @@
 				<div class="container">
 					<nav class="navbar fixed-bottom navbar-light" style="background-color: #e3f2fd;">
 						<span class="navbar-text">
-					    Web Application created by Ben Parmeter, copyright 2016-2019.
+					    Web Application created by Ben Parmeter, copyright 2016-2020.
 					  </span>
 		 			</nav>
 				</div>
 			<!-- Optional JavaScript -->
 			<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-			<script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
-			<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"></script>
 			<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
 		</body>

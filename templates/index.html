@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	{% if theme == 'dark' %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-dark.css') }}">
+	{% else %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+	{% endif %}
 
     <!-- Adding a Favicon -->
      <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon" type="image/x-icon" />
@@ -48,31 +52,9 @@
 				<div class="card">
 				  <div class="card-body">
 						<form name="input" action="/" method="POST">
-							<div class="btn-group-vertical btn-group-lg btn-block" role="group">
-								<!-- Living Room Button -->
-								{% if spkr_state[0] == 'on' %}
-								<button type="submit" name="spkrs_01" value="off" class="btn btn-info">Living Room</button>
-								{% else %}
-								<button type="submit" name="spkrs_01" value="on" class="btn btn-outline-secondary">Living Room</button>
-								{% endif %}
-
-								<!-- Kitchen Room Button -->
-								{% if spkr_state[1] == 'on' %}
-								<button type="submit" name="spkrs_02" value="off" class="btn btn-info">Kitchen</button>
-								{% else %}
-								<button type="submit" name="spkrs_02" value="on" class="btn btn-outline-secondary">Kitchen</button>
-								{% endif %}
-
-								<!-- Dining Room Button -->
-								{% if spkr_state[2] == 'on' %}
-								<button type="submit" name="spkrs_03" value="off" class="btn btn-info">Dining Room</button>
-								{% else %}
-								<button type="submit" name="spkrs_03" value="on" class="btn btn-outline-secondary">Dining Room</button>
-								{% endif %}
-
-							</div> <!-- End Button Group -->
-
+							<div id="refreshbuttons"></div>
 						</form>
+
 						<br>
 
 						<!-- All-On Settings Button -->
@@ -90,20 +72,6 @@
 							<input name="spkrs_03" type="hidden" value="off">
 							<button type="submit" class="btn btn-primary btn-lg btn-block">Default</button>
 						</form>
-						<br>
-						<!-- Status Bar -->
-	          {% if spkr_state[4] == 'on' %}
-	          <div class="alert alert-warning" role="alert">
-							<img src="{{ url_for('static', filename='img/warn-icon.png') }}" width="20" height="20" class="d-inline-block align-top" alt="">
-	            <strong>    Speaker Protection Enabled:</strong> Speaker protection automatically enabled when two (2) or more speakers enabled.
-	          </div>
-	          {% else %}
-	          <div class="alert alert-info" role="alert">
-							<img src="{{ url_for('static', filename='img/info-icon.png') }}" width="20" height="20" class="d-inline-block align-top" alt="">
-							<strong>    Speaker Protection Disabled:</strong> Speaker protection automatically disabled when one (1) set of speakers enabled.
-	          </div>
-	          {% endif %}
-
 				  </div>
 				</div>
   	</div> <!-- End Showcase -->
@@ -111,15 +79,24 @@
 		<div class="container">
 			<nav class="navbar fixed-bottom navbar-light" style="background-color: #e3f2fd;">
 				<span class="navbar-text">
-			    Web Application created by Ben Parmeter, copyright 2016-2019.
+			    Web Application created by Ben Parmeter, copyright 2016-2020.
 			  </span>
  			</nav>
 		</div>
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-	<script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+	<script>
+		$(document).ready(function(){
+		  $('#refreshbuttons').load("/activebuttons");
+		  
+		  setInterval(function(){
+			$('#refreshbuttons').load("/activebuttons");
+		  }, 2000);       
+		});
+	</script>
 
 </body>
 </html>

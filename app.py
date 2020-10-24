@@ -7,6 +7,7 @@ import os
 import pickle
 import json
 import datetime
+import secrets
 
 app = Flask(__name__)
 
@@ -16,6 +17,7 @@ def index():
 	spkr_state = ReadSpkrState()
 	spkr_count = 0
 	error = False
+	settings = ReadSettings()
 	# If posting, process input from POST
 	if request.method == 'POST':
 		response = request.form
@@ -33,6 +35,7 @@ def index():
 		for x in range(4):
 			if spkr_state[x] == 'on':
 				spkr_count = spkr_count + 1
+		print(f'Count Enabled: {spkr_count}')
 		if (spkr_count > 1):
 			spkr_state[4] = 'on'
 		else:
@@ -40,13 +43,18 @@ def index():
 
 		WriteSpkrState(spkr_state)
 
-	return render_template('index.html', spkr_state=spkr_state, error=error)
+	return render_template('index.html', spkr_state=spkr_state, error=error, theme=settings['theme'])
 
+@app.route('/activebuttons', methods=['POST','GET'])
+def activebuttons():
+	spkr_state = ReadSpkrState()
+	return render_template('activeb.html', spkr_state=spkr_state)
 
 @app.route('/admin/<action>', methods=['POST','GET'])
 @app.route('/admin', methods=['POST','GET'])
 def admin(action=None):
 	settings = ReadSettings()
+	theme = 'dark'
 
 	if (request.method == 'POST') and (action == 'settings'):
 		response = request.form
@@ -63,6 +71,12 @@ def admin(action=None):
 			if(response['apigen']=='requested'):
 				settings['api_settings']['api_key'] = gen_api_key(32)
 				WriteSettings(settings)
+		if('darkmode' in response):
+			if(response['darkmode'] == 'true'):
+				settings['theme'] = 'dark'
+			else:
+				settings['theme'] = 'default'
+			WriteSettings(settings)
 
 	if action == 'reboot':
 		event = "Admin: Reboot"
@@ -86,7 +100,7 @@ def admin(action=None):
 
 	api_enable = settings['api_settings']['api_enable']
 
-	return render_template('admin.html', action=action, uptime=uptime, cpuinfo=cpuinfo, temp=temp, ifconfig=ifconfig, apikey=api_key, apienable=api_enable)
+	return render_template('admin.html', action=action, uptime=uptime, cpuinfo=cpuinfo, temp=temp, ifconfig=ifconfig, apikey=api_key, apienable=api_enable, theme=settings['theme'])
 
 @app.route('/manifest')
 def manifest():
@@ -141,14 +155,10 @@ def extapi(action=None):
 
 	return ('404 Error.')
 
-def gen_api_key(length):
 	# Attribution to Vladimir Ignatyev on Stack Overflow
 	# https://stackoverflow.com/questions/41969093/how-to-generate-passwords-in-python-2-and-python-3-securely
-    charset="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz"
-    random_bytes = os.urandom(length)
-    len_charset = len(charset)
-    indices = [int(len_charset * (ord(byte) / 256.0)) for byte in random_bytes]
-    return "".join([charset[index] for index in indices])
+def gen_api_key(length, charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"):
+    return "".join([secrets.choice(charset) for _ in range(0, length)])
 
 def checkcputemp():
 	temp = os.popen('vcgencmd measure_temp').readline()
@@ -203,6 +213,8 @@ def ReadSettings():
 			'api_enable': 'disabled', # enabled / disabled API interface
 			'api_key': api_key, # Randomly Generated API Key
 			}
+
+		settings['theme'] = 'default' 
 
 		WriteSettings(settings)
 
